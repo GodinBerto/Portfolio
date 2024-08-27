@@ -103,7 +103,7 @@ export default function Navbar() {
 
             <li className="bg-white text-black rounded-sm p-2 hover:bg-purple-700 hover:text-white shadow-lg hover:shadow-[#242424] outline-none border-none">
               <a
-                href="/files/Godfred Quarm - cv.docx"
+                href="/files/Godfred Quarm - CV.docx"
                 download="Godfred-Quarm-cv.docx"
                 onClick={handleLinkClick}>
                 Download CV
