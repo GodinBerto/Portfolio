@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Welcome from "./welcome/page";
 import About from "./about/page";
 import Skills from "./skills/page";
