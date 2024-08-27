@@ -29,8 +29,8 @@ export default function Welcome() {
             </div>
             <div className="">
               <Link
-                href="/files/Godfred Quarm - cv.docx"
-                download="Godfred-Quarm-CV.docx"
+                href="/files/Godfred Quarm - CV.docx"
+                download="Godfred-Quarm-cv.docx"
                 className="text-[1.5rem] hover:text-white hover:bg-purple-700 bg-white p-2 transition duration-[0.4s] shadow-lg hover:shadow-black rounded-md">
                 Download CV
               </Link>
