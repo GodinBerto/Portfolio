@@ -34,3 +34,7 @@ h1 {
   flex-direction: column;
   height: 80%;
 }
+
+.no-scroll {
+  overflow: hidden;
+}
