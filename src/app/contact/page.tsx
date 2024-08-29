@@ -20,16 +20,54 @@ export default function Contact() {
   const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
   const [showStatus, setShowStatus] = useState(false);
+  const [statusError, setStatusError] = useState("");
+  const [showStatusError, setShowStatusError] = useState(false);
+  const [emailError, setEmailError] = useState("");
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+
+    if (e.target.name === "email") {
+      if (!validateEmail(e.target.value)) {
+        setEmailError("Please enter a valid email address.");
+      } else {
+        setEmailError("");
+      }
+    }
+  };
+
+  const verifyEmail = async (email: string) => {
+    const apiKey = "52e7c000ca394457980a5c6e3c24ea00";
+    const response = await fetch(
+      `https://emailvalidation.abstractapi.com/v1/?api_key=${apiKey}&email=${email}`
+    );
+    const data = await response.json();
+    return data.is_valid_format.value && data.is_smtp_valid.value;
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!validateEmail(formData.email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
+
     setLoading(true);
+
+    const isRealEmail = await verifyEmail(formData.email);
+    if (!isRealEmail) {
+      setEmailError("This email address appears to be invalid.");
+      setLoading(false);
+      return;
+    }
 
     const response = await fetch("/api", {
       method: "POST",
@@ -41,13 +79,13 @@ export default function Contact() {
 
     if (response.ok) {
       setStatus("Message sent successfully!");
-      setLoading(false);
+      setShowStatus(true);
       setFormData({ name: "", email: "", message: "" });
     } else {
-      setStatus("Failed to send message.");
-      setLoading(false);
+      setStatusError("Failed to send message.");
+      setShowStatusError(true);
     }
-    setShowStatus(true);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -59,6 +97,16 @@ export default function Contact() {
       return () => clearTimeout(timer); // Cleanup timer on component unmount
     }
   }, [showStatus]);
+
+  useEffect(() => {
+    if (showStatusError) {
+      const timer = setTimeout(() => {
+        setShowStatusError(false);
+      }, 5000); // Hide status message after 5 seconds
+
+      return () => clearTimeout(timer); // Cleanup timer on component unmount
+    }
+  }, [showStatusError]);
 
   return (
     <div className="bg-white pt-10 pb-10" id="contact">
@@ -139,7 +187,7 @@ export default function Contact() {
                 required
               />
             </div>
-            <div className="flex">
+            <div className="flex flex-col">
               <input
                 type="email"
                 name="email"
@@ -149,6 +197,9 @@ export default function Contact() {
                 className="p-3 w-[100%] border-[1px] border-gray-300 outline-none rounded-md"
                 required
               />
+              {emailError && (
+                <p className="text-red-500 text-sm mt-1">{emailError}</p>
+              )}
             </div>
             <div className="flex flex-col">
               <textarea
@@ -171,6 +222,11 @@ export default function Contact() {
           {showStatus && (
             <div className="bg-green-300 rounded-md p-3 flex justify-center items-center mt-6">
               <p className="">{status}</p>
+            </div>
+          )}
+          {showStatusError && (
+            <div className="bg-red-300 rounded-md p-3 flex justify-center items-center mt-6">
+              <p className="">{statusError}</p>
             </div>
           )}
         </div>
